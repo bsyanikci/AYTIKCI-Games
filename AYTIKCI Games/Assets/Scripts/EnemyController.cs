@@ -100,4 +100,27 @@ public class EnemyController : MonoBehaviour
     {
         // Implement death animation or effect
     }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        // Altýn kazandýr
+        GoldManager.Instance.AddGold(goldReward);
+        GoldManager.Instance.UpdateGoldDisplay();
+
+        // Düþmaný yok et
+        Destroy(gameObject);
+
+        // Örneðin bir animasyon veya ses çalma burada yapýlabilir.
+        // Örnek: AudioManager.Instance.PlaySound("EnemyDeath");
+    }
 }

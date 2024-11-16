@@ -101,30 +101,60 @@ public class Turret : MonoBehaviour
 
     public Transform turretHead;         // If you want the turret to rotate to face the enemy (optional)
 
+    public GameObject projectilePrefab; // Prefab ayarlanacak
+    public Transform firePoint; // Projectile'nin fýrlatýlacaðý nokta
+
+
+    //void Update()
+    //{
+    //    // Update attack timer
+    //    attackTimer -= Time.deltaTime;
+
+    //    // Detect and find the nearest enemy
+    //    FindEnemyInRange();
+
+    //    // If a target is found, attack it
+    //    if (targetEnemy != null)
+    //    {
+    //        // Rotate turret head towards the enemy
+    //        RotateTowardsEnemy();
+
+    //        // Attack if the cooldown is over
+    //        if (attackTimer <= 0f)
+    //        {
+    //            Attack();
+    //            attackTimer = attackCooldown;  // Reset the attack cooldown timer
+    //        }
+    //    }
+
+
+    //}
 
     void Update()
     {
-        // Update attack timer
         attackTimer -= Time.deltaTime;
 
-        // Detect and find the nearest enemy
-        FindEnemyInRange();
+        if (targetEnemy == null || !IsTargetInRange())
+        {
+            FindEnemyInRange();
+        }
 
-        // If a target is found, attack it
         if (targetEnemy != null)
         {
-            // Rotate turret head towards the enemy
             RotateTowardsEnemy();
 
-            // Attack if the cooldown is over
             if (attackTimer <= 0f)
             {
                 Attack();
-                attackTimer = attackCooldown;  // Reset the attack cooldown timer
+                attackTimer = attackCooldown;
             }
         }
-        
+    }
 
+    bool IsTargetInRange()
+    {
+        if (targetEnemy == null) return false;
+        return Vector3.Distance(transform.position, targetEnemy.transform.position) <= attackRange;
     }
 
     // Find the closest enemy within the attack range
@@ -151,30 +181,46 @@ public class Turret : MonoBehaviour
     }
 
     // Attack the target enemy by applying damage
+    //void Attack()
+    //{
+    //    if (targetEnemy != null)
+    //    {
+    //        EnemyController enemyController = targetEnemy.GetComponent<EnemyController>();
+    //        if (enemyController != null)
+    //        {
+    //            // Apply damage to the enemy
+    //            enemyController.health -= damage;
+
+    //            // If the enemy's health is 0 or below, destroy the enemy
+    //            if (enemyController.health <= 0)
+    //            {
+    //                // Reward gold for killing the enemy
+    //                GoldManager.Instance.AddGold(enemyController.goldReward);
+    //                GoldManager.Instance.UpdateGoldDisplay();
+    //                Debug.LogError("Money : " + GoldManager.Instance.currentGold);
+    //                // Optionally, play death animation, sound, or spawn effects here
+    //                // Example: enemyController.PlayDeathAnimation();
+    //                // AudioManager.Instance.PlaySound("EnemyDeath");
+
+    //                // Destroy the enemy from the scene
+    //                Destroy(targetEnemy);  // Destroy the target enemy instance
+    //            }
+    //        }
+    //    }
+    //}
+
+
     void Attack()
     {
         if (targetEnemy != null)
         {
-            EnemyController enemyController = targetEnemy.GetComponent<EnemyController>();
-            if (enemyController != null)
+            GameObject projectileInstance = Instantiate(projectilePrefab, firePoint.position, firePoint.rotation);
+            Projectile projectileScript = projectileInstance.GetComponent<Projectile>();
+
+            if (projectileScript != null)
             {
-                // Apply damage to the enemy
-                enemyController.health -= damage;
-
-                // If the enemy's health is 0 or below, destroy the enemy
-                if (enemyController.health <= 0)
-                {
-                    // Reward gold for killing the enemy
-                    GoldManager.Instance.AddGold(enemyController.goldReward);
-                    GoldManager.Instance.UpdateGoldDisplay();
-                    Debug.LogError("Money : " + GoldManager.Instance.currentGold);
-                    // Optionally, play death animation, sound, or spawn effects here
-                    // Example: enemyController.PlayDeathAnimation();
-                    // AudioManager.Instance.PlaySound("EnemyDeath");
-
-                    // Destroy the enemy from the scene
-                    Destroy(targetEnemy);  // Destroy the target enemy instance
-                }
+                projectileScript.Initialize(targetEnemy.transform);
+                projectileScript.damage = damage; // Projectile'ye hasar deðeri aktarýlýr
             }
         }
     }
@@ -191,10 +237,20 @@ public class Turret : MonoBehaviour
     }
 
     // Draw the range sphere in the editor for visualization (optional)
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, attackRange);
+    //}
+
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        if (firePoint != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(firePoint.position, 0.1f); // FirePoint pozisyonunu görselleþtirir
+            Gizmos.DrawLine(firePoint.position, firePoint.position + firePoint.forward * 2); // Ateþ yönünü çizer
+        }
     }
 
     public void TakeDamage(float damage)
