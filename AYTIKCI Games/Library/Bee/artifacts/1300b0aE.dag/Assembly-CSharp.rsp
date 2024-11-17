@@ -369,6 +369,7 @@
 "Assets/Scripts/CameraMove.cs"
 "Assets/Scripts/CameraMovement.cs"
 "Assets/Scripts/CPUHealth.cs"
+"Assets/Scripts/EliminationMenu.cs"
 "Assets/Scripts/EnemyController.cs"
 "Assets/Scripts/EnemySpawner.cs"
 "Assets/Scripts/GameMenu.cs"

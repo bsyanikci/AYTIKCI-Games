@@ -1,5 +1,6 @@
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.EventSystems;
 
 public class TurretPlacer : MonoBehaviour
 {
@@ -23,6 +24,13 @@ public class TurretPlacer : MonoBehaviour
         {
             Touch touch = Input.GetTouch(0);
 
+            // Ignore touches on UI elements
+            if (IsPointerOverUI(touch.position))
+            {
+                Debug.Log("Touch on UI ignored.");
+                return;
+            }
+
             if (touch.phase == TouchPhase.Began)
             {
                 // Create a preview turret when the touch starts
@@ -41,6 +49,16 @@ public class TurretPlacer : MonoBehaviour
                 PlaceTurret(touch.position);
             }
         }
+    }
+
+    // Helper function to check if a touch is over a UI element
+    private bool IsPointerOverUI(Vector2 touchPosition)
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = touchPosition;
+        var results = new System.Collections.Generic.List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+        return results.Count > 0;
     }
 
     void StartPlacingTurret(Vector2 touchPosition)
