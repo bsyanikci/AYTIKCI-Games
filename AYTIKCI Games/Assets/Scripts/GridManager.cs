@@ -23,10 +23,10 @@ public class GridManager : MonoBehaviour
             {
                 if (Random.Range(0, prefabPlacementProbability) ==1)
                 {
-                    Vector3 position = new Vector3(x * cellSize, 0, z * cellSize);
+                    Vector3 position = new Vector3(x * cellSize, 1.2f, z * cellSize);
 
                     // Avoid placing near the CPU
-                    if (Vector3.Distance(position, cpu.transform.position) > cellSize)
+                    if (Vector3.Distance(position, cpu.transform.position) > 6)
                     {
                         int prefabIndex = Random.Range(0, randomPrefabs.Length);
                         Instantiate(randomPrefabs[prefabIndex], position, Quaternion.identity);
