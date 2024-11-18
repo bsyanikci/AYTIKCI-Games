@@ -104,7 +104,7 @@ public class Turret : MonoBehaviour
     public GameObject projectilePrefab; // Prefab ayarlanacak
     public Transform firePoint; // Projectile'nin fýrlatýlacaðý nokta
 
-
+    public AudioClip attackSound; // Sound effect for the turret attack
     //void Update()
     //{
     //    // Update attack timer
@@ -219,8 +219,15 @@ public class Turret : MonoBehaviour
 
             if (projectileScript != null)
             {
+                // Play attack sound
+                if (attackSound != null)
+                {
+                    AudioManager.instance.PlaySound(attackSound);
+                }
                 projectileScript.Initialize(targetEnemy.transform);
                 projectileScript.damage = damage; // Projectile'ye hasar deðeri aktarýlýr
+                
+                
             }
         }
     }
@@ -231,6 +238,7 @@ public class Turret : MonoBehaviour
         if (turretHead != null && targetEnemy != null)
         {
             Vector3 direction = targetEnemy.transform.position - turretHead.position;
+            direction.y = 0; // Ignore vertical component for horizontal-only rotation
             Quaternion rotation = Quaternion.LookRotation(direction);
             turretHead.rotation = Quaternion.Slerp(turretHead.rotation, rotation, Time.deltaTime * attackSpeed);
         }

@@ -17,6 +17,10 @@ public class EnemyController : MonoBehaviour
     public GameObject targetCPU; // Target to attack (the CPU)
     public GameObject targetTurret; // Target for casters (turrets)
     public int goldReward = 10; // Gold awarded when this enemy is killed
+    public float attackSpeed = 1f;    // Number of seconds between attacks
+    private float attackCooldown = 0f;   // Timer to manage attack intervals
+    public GameObject attackEffect; // Reference to the particle effect prefab
+    public Transform attackEffectSpawnPoint; // Where the effect spawns (e.g., enemy hand or weapon)
 
 
     private UnityEngine.AI.NavMeshAgent agent;
@@ -50,12 +54,15 @@ public class EnemyController : MonoBehaviour
             return; // Exit the Update method to avoid trying to attack the CPU
         }
 
+        attackCooldown -= Time.deltaTime;
+
         if (enemyType == EnemyType.Melee)
         {
             // Melee enemies attack the CPU directly
-            if (Vector3.Distance(transform.position, targetCPU.transform.position) <= attackRange)
+            if (Vector3.Distance(transform.position, targetCPU.transform.position) <= attackRange && attackCooldown <= 0f)
             {
-                AttackCPU();
+                    AttackCPU();
+                    attackCooldown = attackSpeed; // Reset the cooldown timer
             }
         }
         else if (enemyType == EnemyType.Caster)
@@ -65,9 +72,14 @@ public class EnemyController : MonoBehaviour
             {
                 agent.SetDestination(targetTurret.transform.position);
 
-                if (Vector3.Distance(transform.position, targetTurret.transform.position) <= attackRange)
+                if (Vector3.Distance(transform.position, targetTurret.transform.position) <= attackRange && attackCooldown <= 0f)
                 {
-                    AttackTurret();
+                    if (attackCooldown <= 0f)
+                    {
+                        AttackTurret();
+                        attackCooldown = attackSpeed; // Reset the cooldown timer
+                    }
+                    
                 }
             }
         }
@@ -77,13 +89,27 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    void TriggerAttackEffect()
+    {
+        if (attackEffect != null && attackEffectSpawnPoint != null)
+        {
+            //// Instantiate the particle effect at the specified spawn point
+            //Instantiate(attackEffect, attackEffectSpawnPoint.position, attackEffectSpawnPoint.rotation);
+
+            Instantiate(attackEffect, attackEffectSpawnPoint.position, Quaternion.Euler(-90, 0, 0));
+
+        }
+    }
+
     void AttackCPU()
     {
         // Logic for CPU damage (e.g., reduce CPU health)
         CPUHealth cpuHealth = targetCPU.GetComponent<CPUHealth>();
         if (cpuHealth != null)
         {
+            Debug.Log("CPU health reduced by: " + damage);
             cpuHealth.TakeDamage(damage);
+            TriggerAttackEffect();
         }
     }
 
@@ -94,6 +120,7 @@ public class EnemyController : MonoBehaviour
         if (turret != null)
         {
             turret.TakeDamage(damage);
+            TriggerAttackEffect();
         }
     }
     public void PlayDeathAnimation()

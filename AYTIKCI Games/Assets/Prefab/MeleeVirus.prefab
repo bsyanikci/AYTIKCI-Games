@@ -120,12 +120,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
-  health: 100
+  health: 50
   damage: 10
-  attackRange: 2.5
+  attackRange: 3
   targetCPU: {fileID: 2269885068870195888, guid: 950cfa678465e9b45881194e9e9dba05, type: 3}
   targetTurret: {fileID: 960408778076658313, guid: c6657f51a4806c342a6165e3d9bfb684, type: 3}
   goldReward: 25
+  attackSpeed: 1
+  attackEffect: {fileID: 8436824622899538942, guid: 57df0ab26f0e63e419c4054225d0e881, type: 3}
+  attackEffectSpawnPoint: {fileID: 196114649413886380}
 --- !u!195 &6709895407620572355
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -136,7 +139,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.50000006
-  m_Speed: 0.5
+  m_Speed: 1
   m_Acceleration: 5
   avoidancePriority: 50
   m_AngularSpeed: 40

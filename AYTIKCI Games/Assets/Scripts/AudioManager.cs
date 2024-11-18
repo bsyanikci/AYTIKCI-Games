@@ -97,6 +97,13 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
         ApplyVolumeSettings();
     }
+    public void PlaySound(AudioClip clip)
+    {
+        if (sfxSource != null && clip != null)
+        {
+            sfxSource[0].PlayOneShot(clip);
+        }
+    }
 
     private void Update()
     {

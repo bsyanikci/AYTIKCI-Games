@@ -20,10 +20,13 @@ public class VolumeControl : MonoBehaviour
     private void SetBGMusicVolume(float value)
     {
         AudioManager.instance.SetBGMusicVolume(value);
+        //SoundManager.Instance.SetBGMusicVolume(value);
     }
     private void SetSFXVolume(float value)
     {
         AudioManager.instance.SetSFXVolume(value);
+        //SoundManager.Instance.SetSFXVolume(value);
+
     }
 
 }
