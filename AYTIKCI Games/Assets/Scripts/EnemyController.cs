@@ -43,6 +43,29 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    void FindNearestTurret()
+    {
+        GameObject[] turrets = GameObject.FindGameObjectsWithTag("Turret");
+        float closestDistance = Mathf.Infinity;
+        GameObject closestTurret = null;
+
+        foreach (GameObject turret in turrets)
+        {
+            float distance = Vector3.Distance(transform.position, turret.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTurret = turret;
+            }
+        }
+
+        if (closestTurret != null)
+        {
+            targetTurret = closestTurret;
+            //agent.SetDestination(targetTurret.transform.position);
+        }
+    }
+
     void Update()
     {
         // Ensure the enemy moves toward the CPU or turret based on its type
@@ -56,33 +79,37 @@ public class EnemyController : MonoBehaviour
 
         attackCooldown -= Time.deltaTime;
 
-        if (enemyType == EnemyType.Melee)
-        {
-            // Melee enemies attack the CPU directly
-            if (Vector3.Distance(transform.position, targetCPU.transform.position) <= attackRange && attackCooldown <= 0f)
+        FindNearestTurret();
+
+        //if (enemyType == EnemyType.Melee)
+        //{
+        // Melee enemies attack the CPU directly
+        if (Vector3.Distance(transform.position, targetCPU.transform.position) <= attackRange && attackCooldown <= 0f)
             {
                     AttackCPU();
                     attackCooldown = attackSpeed; // Reset the cooldown timer
             }
-        }
-        else if (enemyType == EnemyType.Caster)
-        {
+        //}
+        //else if (enemyType == EnemyType.Caster)
+        //{
             // Casters should attack turrets if they are within range
             if (targetTurret != null)
             {
-                agent.SetDestination(targetTurret.transform.position);
+                //agent.SetDestination(targetTurret.transform.position);
 
                 if (Vector3.Distance(transform.position, targetTurret.transform.position) <= attackRange && attackCooldown <= 0f)
                 {
+                    Debug.Log("Attacked Turret: " + damage);
                     if (attackCooldown <= 0f)
                     {
+                        Debug.Log("2nd Attacked Turret: " + damage);
                         AttackTurret();
                         attackCooldown = attackSpeed; // Reset the cooldown timer
                     }
                     
                 }
             }
-        }
+        //}
         if (targetCPU != null)
         {
             Debug.DrawLine(transform.position, targetCPU.transform.position, Color.red); // Visualize the path
@@ -107,7 +134,7 @@ public class EnemyController : MonoBehaviour
         CPUHealth cpuHealth = targetCPU.GetComponent<CPUHealth>();
         if (cpuHealth != null)
         {
-            Debug.Log("CPU health reduced by: " + damage);
+            
             cpuHealth.TakeDamage(damage);
             TriggerAttackEffect();
         }

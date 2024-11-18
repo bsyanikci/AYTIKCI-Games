@@ -222,7 +222,8 @@ public class Turret : MonoBehaviour
                 // Play attack sound
                 if (attackSound != null)
                 {
-                    AudioManager.instance.PlaySound(attackSound);
+                    Debug.Log("AttackSound");
+                    SoundManager.Instance.PlaySound(attackSound);
                 }
                 projectileScript.Initialize(targetEnemy.transform);
                 projectileScript.damage = damage; // Projectile'ye hasar deðeri aktarýlýr

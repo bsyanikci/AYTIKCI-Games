@@ -14,8 +14,13 @@ public class GameMenu : MonoBehaviour
 
         PlayerPrefs.SetFloat("BGMusicVolume", bgMusicVolume);
         PlayerPrefs.SetFloat("SFXVolume", sfxVolume);
-        PlayerPrefs.SetInt("PlayerGold", 100);
+        //PlayerPrefs.SetInt("PlayerGold", 100);
         PlayerPrefs.Save();
+
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.ResetGold(); // Reset gold to the default value
+        }
 
         SceneManager.LoadScene("SampleScene");
     }

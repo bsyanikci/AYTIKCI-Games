@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GoldManager : MonoBehaviour
 {
@@ -26,8 +27,11 @@ public class GoldManager : MonoBehaviour
 
     void Start()
     {
+        // Attach the scene loaded event listener
+        SceneManager.sceneLoaded += OnSceneLoaded;
         // Load the player's gold when the game starts
         LoadGold();
+        FindGoldDisplayInScene();
         UpdateGoldDisplay();
     }
 
@@ -66,7 +70,9 @@ public class GoldManager : MonoBehaviour
     // Loads the player's gold from PlayerPrefs
     private void LoadGold()
     {
+        Debug.Log(PlayerPrefs.GetInt(GOLD_KEY, 100));
         currentGold = PlayerPrefs.GetInt(GOLD_KEY, 100); // Load gold, default to 100 if not found
+        Debug.Log(currentGold);
     }
 
     // Updates the gold display on the UI
@@ -76,5 +82,38 @@ public class GoldManager : MonoBehaviour
         {
             goldDisplay.text = currentGold.ToString();  // Update the UI text
         }
+    }
+
+    private void OnDestroy()
+    {
+        // Detach the scene loaded event listener when the object is destroyed
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Reassign goldDisplay when a new scene is loaded
+        FindGoldDisplayInScene();
+        UpdateGoldDisplay();
+    }
+
+    private void FindGoldDisplayInScene()
+    {
+        GameObject goldDisplayObject = GameObject.Find("goldDisplay");
+        if (goldDisplayObject != null)
+        {
+            goldDisplay = goldDisplayObject.GetComponent<Text>();
+        }
+        else
+        {
+            Debug.LogWarning("GoldText UI element not found in the current scene.");
+        }
+    }
+
+    public void ResetGold()
+    {
+        currentGold = 100; // Set to default value
+        SaveGold(); // Save to PlayerPrefs
+        UpdateGoldDisplay(); // Update the UI
     }
 }

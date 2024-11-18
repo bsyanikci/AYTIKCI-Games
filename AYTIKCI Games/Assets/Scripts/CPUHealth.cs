@@ -32,8 +32,8 @@ public class CPUHealth : MonoBehaviour
         {
             if (defeatSound != null)
             {
-
-                AudioManager.instance.PlaySound(defeatSound);
+                GoldManager.Instance.ResetGold();
+                SoundManager.Instance.PlaySound(defeatSound);
             }
             ShowEliminationMenu(); // Show the menu
             Destroy(gameObject); // Destroy CPU when health is 0

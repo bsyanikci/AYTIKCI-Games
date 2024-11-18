@@ -23,13 +23,20 @@ public class SoundManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
 
             SceneManager.sceneLoaded += onSceneLoaded;
+            LoadVolumeSettings();
+            SetBGMusicVolume(bgMusicVolume);
+            Debug.Log("BG Volume Edited!"+ bgMusicVolume);
+            SetSFXVolume(sfxVolume);
+            Debug.Log("SFX Volume :" + sfxVolume);
+
+            //ApplyVolumeSettings();
         }
         else
         {
             Destroy(gameObject);
             return;
         }
-        LoadVolumeSettings();
+        
     }
     private void onSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -44,7 +51,6 @@ public class SoundManager : MonoBehaviour
             }
 
         }
-        ApplyVolumeSettings();
     }
     private void AssignAudioSources()
     {
@@ -56,7 +62,7 @@ public class SoundManager : MonoBehaviour
 
         AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
 
-        sfxSource = System.Array.FindAll(allAudioSources, source => source != bgMusicSource);
+        //sfxSource = System.Array.FindAll(allAudioSources, source => source != bgMusicSource);
 
     }
 
@@ -91,7 +97,6 @@ public class SoundManager : MonoBehaviour
     private void LoadVolumeSettings()
     {
         bgMusicVolume = PlayerPrefs.GetFloat("BGMusicVolume", 1f);
-
         sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
     }
 
@@ -100,7 +105,14 @@ public class SoundManager : MonoBehaviour
         if (bgMusicSource != null)
         {
             bgMusicSource.volume = bgMusicVolume;
+            if (bgMusicSource.isPlaying)
+            {
+                bgMusicSource.Pause();
+                bgMusicSource.Play();
+            }
         }
+        
+
 
         foreach (var sfx in sfxSource)
         {

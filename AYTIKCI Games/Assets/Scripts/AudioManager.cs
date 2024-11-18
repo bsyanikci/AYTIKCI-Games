@@ -49,7 +49,7 @@ public class AudioManager : MonoBehaviour
 
     private void AssignAudioSources()
     {
-        bgMusicSource = GameObject.Find("bg")?.GetComponent<AudioSource>();
+        //bgMusicSource = GameObject.Find("bg")?.GetComponent<AudioSource>();
 
         if(bgMusicSource != null)
         {
@@ -58,7 +58,7 @@ public class AudioManager : MonoBehaviour
 
         AudioSource[] allAudioSources = FindObjectsOfType<AudioSource>();
 
-        sfxSource = System.Array.FindAll(allAudioSources, source => source != bgMusicSource);
+        //sfxSource = System.Array.FindAll(allAudioSources, source => source != bgMusicSource);
 
     }
 
