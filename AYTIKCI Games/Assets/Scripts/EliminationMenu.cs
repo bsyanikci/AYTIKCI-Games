@@ -7,7 +7,7 @@ public class EliminationMenu : MonoBehaviour
     {
         // Reset the time scale in case it was paused
         Time.timeScale = 1;
-
+        GoldManager.Instance.ResetGold();
         // Load the main menu scene (replace "MainMenu" with your scene name)
         SceneManager.LoadScene("MainMenu");
     }

@@ -119,10 +119,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4fd9ba98f2e1ea541bbaba18fc7fd9c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyType: 0
+  WinPanel: {fileID: 0}
+  OpenMenu: {fileID: 0}
+  TurretSelectionMenu: {fileID: 0}
+  enemyType: 2
   health: 2000
   damage: 10
-  attackRange: 3
+  attackRange: 4
   targetCPU: {fileID: 2269885068870195888, guid: 950cfa678465e9b45881194e9e9dba05, type: 3}
   targetTurret: {fileID: 960408778076658313, guid: c6657f51a4806c342a6165e3d9bfb684, type: 3}
   goldReward: 250

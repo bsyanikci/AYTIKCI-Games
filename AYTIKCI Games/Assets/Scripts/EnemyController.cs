@@ -1,15 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum EnemyType
 {
     Melee,
-    Caster
+    Caster,
+    Boss
 }
 
 public class EnemyController : MonoBehaviour
 {
+    public GameObject WinPanel;
+    public GameObject OpenMenu;
+    public GameObject TurretSelectionMenu;
     public EnemyType enemyType;
     public float health = 100f;
     public float damage = 10f;
@@ -27,6 +32,23 @@ public class EnemyController : MonoBehaviour
 
     void Start()
     {
+
+        GameObject canvas = GameObject.Find("UI"); // Ensure the parent is active
+        if (canvas != null)
+        {
+            WinPanel = canvas.transform.Find("WinPanel").gameObject;
+        }
+        OpenMenu = GameObject.Find("OpenMenu");
+        if (OpenMenu == null)
+        {
+            Debug.LogError("OpenMenu not found! Ensure the name matches in the Hierarchy.");
+        }
+        TurretSelectionMenu = GameObject.Find("TurretSelection");
+        if (TurretSelectionMenu == null)
+        {
+            Debug.LogError("TurretSelection Menu not found! Ensure the name matches in the Hierarchy.");
+        }
+
         agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         // Make sure the NavMeshAgent is properly initialized and can move.
@@ -86,6 +108,7 @@ public class EnemyController : MonoBehaviour
         // Melee enemies attack the CPU directly
         if (Vector3.Distance(transform.position, targetCPU.transform.position) <= attackRange && attackCooldown <= 0f)
             {
+                    Debug.LogWarning("Attack CPU");
                     AttackCPU();
                     attackCooldown = attackSpeed; // Reset the cooldown timer
             }
@@ -102,7 +125,6 @@ public class EnemyController : MonoBehaviour
                     Debug.Log("Attacked Turret: " + damage);
                     if (attackCooldown <= 0f)
                     {
-                        Debug.Log("2nd Attacked Turret: " + damage);
                         AttackTurret();
                         attackCooldown = attackSpeed; // Reset the cooldown timer
                     }
@@ -120,11 +142,20 @@ public class EnemyController : MonoBehaviour
     {
         if (attackEffect != null && attackEffectSpawnPoint != null)
         {
-            //// Instantiate the particle effect at the specified spawn point
-            //Instantiate(attackEffect, attackEffectSpawnPoint.position, attackEffectSpawnPoint.rotation);
+            // Instantiate the particle effect at the specified spawn point
+            GameObject effectInstance = Instantiate(attackEffect, attackEffectSpawnPoint.position, Quaternion.Euler(-90, 0, 0));
 
-            Instantiate(attackEffect, attackEffectSpawnPoint.position, Quaternion.Euler(-90, 0, 0));
-
+            // Destroy the particle effect after its duration
+            ParticleSystem ps = effectInstance.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                Destroy(effectInstance, ps.main.duration + ps.main.startLifetime.constantMax);
+            }
+            else
+            {
+                // If the effect has no ParticleSystem, destroy it after a default time (e.g., 2 seconds)
+                Destroy(effectInstance, 2f);
+            }
         }
     }
 
@@ -134,7 +165,7 @@ public class EnemyController : MonoBehaviour
         CPUHealth cpuHealth = targetCPU.GetComponent<CPUHealth>();
         if (cpuHealth != null)
         {
-            
+            Debug.LogWarning("Attacked CPU");
             cpuHealth.TakeDamage(damage);
             TriggerAttackEffect();
         }
@@ -144,8 +175,13 @@ public class EnemyController : MonoBehaviour
     {
         // Logic for turret damage (e.g., destroy turret)
         Turret turret = targetTurret.GetComponent<Turret>();
+        if (targetCPU.GetComponent<CPUHealth>() == null)
+        {
+            Debug.LogError("CPUHealth component is missing on the targetCPU GameObject!");
+        }
         if (turret != null)
         {
+            Debug.LogWarning("Attack Turret");
             turret.TakeDamage(damage);
             TriggerAttackEffect();
         }
@@ -155,13 +191,35 @@ public class EnemyController : MonoBehaviour
         // Implement death animation or effect
     }
 
+    
+
     public void TakeDamage(float damage)
     {
         health -= damage;
 
         if (health <= 0)
         {
+            if (enemyType == EnemyType.Boss) // Check if this enemy is the boss
+            {
+                ShowWinMenu();
+                Time.timeScale = 0; // Pause the game
+            }
             Die();
+        }
+    }
+
+    private void ShowWinMenu()
+    {
+        if (WinPanel != null)
+        {
+            WinPanel.SetActive(true); // Activate the win panel
+            TurretSelectionMenu.SetActive(false);
+            OpenMenu.SetActive(false);
+            Time.timeScale = 0; // Pause the game
+        }
+        else
+        {
+            Debug.LogWarning("Win Panel is not assigned in the Inspector.");
         }
     }
 
